@@ -1,7 +1,8 @@
 .navbar {
-  height: 3vh;
+  height: fit-content;
   background-color: #333 !important;
   justify-content: space-between;
+  align-items: center;
 }
 
 .navbar-brand {
@@ -23,4 +24,6 @@ a:hover {
 
 .nav-item{
   margin-right: 20px;
+  display: flex;
+  align-items: center;
 }
