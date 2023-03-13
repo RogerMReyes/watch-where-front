@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Modal, Button, Row, Table } from 'react-bootstrap';
 import axios from 'axios';
 import imgPlaceholder from './imgs/no-image-icon-23489.png';
+import { withAuth0 } from '@auth0/auth0-react';
 import './TitleCards.css';
 
 class TitleCards extends React.Component {
@@ -10,19 +11,26 @@ class TitleCards extends React.Component {
     this.state = {
       showModal: false,
       selectedTitle: {},
-      sD: '',
-      hD: '',
-      fourK: '',
+      sD: [],
+      hD: [],
+      fourK: [],
     }
   }
 
   showModal = async (movieId) => {
-    const url = `${process.env.REACT_APP_SERVER}/titleInfo?titleID=${movieId}`;
-    const response = await axios.get(url);
-    const sD = this.getSources('SD', response.data);
-    const hD = this.getSources('HD', response.data);
-    const fourK = this.getSources('4K', response.data);
-    this.setState({ showModal: true, selectedTitle: response.data, sD: sD, hD: hD, fourK: fourK });
+    if (this.props.auth0.isAuthenticated) {
+      const res = await this.props.auth0.getIdTokenClaims();
+      const jwt = res.__raw;
+      const config = {
+        headers: { "Authorization": `Bearer ${jwt}` }
+      }
+      const url = `${process.env.REACT_APP_SERVER}/titleInfo?titleID=${movieId}`;
+      const response = await axios.get(url, config);
+      const sD = this.getSources('SD', response.data);
+      const hD = this.getSources('HD', response.data);
+      const fourK = this.getSources('4K', response.data);
+      this.setState({ showModal: true, selectedTitle: response.data, sD: sD, hD: hD, fourK: fourK });
+    }
   }
 
   hideModal = () => {
@@ -31,10 +39,18 @@ class TitleCards extends React.Component {
 
   getSources = (formatType, selectedTitle) => {
     const filteredList = selectedTitle.sources.filter(src => src.format === formatType);
-    const formatList = filteredList.map(src => src.name);
-    const cleanList = [...new Set(formatList.sort())];
-    const srcString = cleanList.join(', ');
-    return srcString;
+    const formatList = filteredList.map(src => ({ name: src.name, webUrl: src.web_url }));
+    const cleanList = [];
+    const checkedSources = [];
+    formatList.forEach(src => {
+      if (!checkedSources.includes(src.name)) {
+        cleanList.push(src);
+        checkedSources.push(src.name);
+      }
+    });
+    const srtList = cleanList.sort((a, b) => a.name.localeCompare(b.name));
+    return srtList;
+
   }
 
   render() {
@@ -59,6 +75,7 @@ class TitleCards extends React.Component {
             sD={this.state.sD}
             hD={this.state.hD}
             fourK={this.state.fourK}
+            auth0={this.props.auth0}
           />
         </Row>
       </div>
@@ -67,6 +84,18 @@ class TitleCards extends React.Component {
 }
 
 class TitleModal extends React.Component {
+
+  handleFav = async () => {
+    if (this.props.auth0.isAuthenticated) {
+      const res = await this.props.auth0.getIdTokenClaims();
+      const jwt = res.__raw;
+      const config = {
+        headers: { "Authorization": `Bearer ${jwt}` }
+      }
+      const url = `${process.env.REACT_APP_SERVER}/titleInfo`;
+      axios.post(url, this.props.selectedTitle, config);
+    }
+  };
 
   render() {
     return (
@@ -93,24 +122,25 @@ class TitleModal extends React.Component {
             <tbody>
               <tr>
                 <td>SD</td>
-                <td>{this.props.sD}</td>
+                <td>{this.props.sD.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
               <tr>
                 <td>HD</td>
-                <td>{this.props.hD}</td>
-
+                <td>{this.props.hD.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
               <tr>
                 <td>4k</td>
-                <td>{this.props.fourK}</td>
+                <td>{this.props.fourK.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
             </tbody>
           </Table>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" onClick={this.props.hideModal}>
-            Add to Favorites
-          </Button>
+          {this.props.auth0.isAuthenticated &&
+            <Button variant="success" onClick={this.handleFav}>
+              Add to Favorites
+            </Button>
+          }
           <Button variant="secondary" onClick={this.props.hideModal}>
             Close
           </Button>
@@ -120,4 +150,4 @@ class TitleModal extends React.Component {
   }
 }
 
-export default TitleCards;
+export default withAuth0(TitleCards);
