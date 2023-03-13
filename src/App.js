@@ -7,6 +7,9 @@ import {
 import Footer from './Footer';
 import Header from './Header';
 import Home from './Home';
+import Profile from './Profile';
+import About from './About';
+import { withAuth0 } from '@auth0/auth0-react';
 
 class App extends React.Component {
   render() {
@@ -14,11 +17,20 @@ class App extends React.Component {
       <Router>
         <Header />
         <Routes>
-        <Route 
-              exact path="/"
-              element={<Home />}
-            >
-            </Route>
+          <Route
+            exact path="/"
+            element={<Home />}
+          >
+          </Route>
+          <Route
+            path='/Profile'
+            element={this.props.auth0.isAuthenticated && <Profile />}>
+          </Route>
+          <Route
+            path='/About'
+            element={<About />}
+          >
+          </Route>
         </Routes>
         <Footer />
       </Router>
@@ -26,4 +38,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default withAuth0(App);
