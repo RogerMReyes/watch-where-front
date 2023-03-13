@@ -1,0 +1,17 @@
+.profile-container{
+  width: 100%;
+
+}
+.profile{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.profile img{
+  float: left;
+  border-radius: 50%;
+  height: 10vh;
+}
+.profile p{
+  margin-bottom: .5rem;
+}
