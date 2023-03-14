@@ -29,7 +29,6 @@
   font-size: 1.5rem;
 }
 
-.searchBtn {
-  position: absolute;
-  bottom: 0;
+.formRow{
+  align-items: flex-end;
 }

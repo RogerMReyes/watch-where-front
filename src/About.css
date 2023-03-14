@@ -1,0 +1,19 @@
+.about{
+  background-color: #393f4b;
+  height: 95vh;
+  color: aliceblue;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.about img{
+  margin: 20px;
+  height: 500px;
+  width: 400px;
+}
+
+.about p{
+  padding: 20px;
+}
