@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Modal, Button, Row, Table } from 'react-bootstrap';
+import { Card, Modal, Button, Row, Table, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import imgPlaceholder from './imgs/no-image-icon-23489.png';
 import { withAuth0 } from '@auth0/auth0-react';
@@ -55,11 +55,11 @@ class TitleCards extends React.Component {
 
   render() {
     return (
-      <div className='titles'>
+      <div id='titles'>
         <Row>
           {this.props.titleData.length > 0 &&
             this.props.titleData.map(obj =>
-              <Card key={obj.movieId} style={{ width: '14rem' }} onClick={() => this.showModal(obj.movieId)}>
+              <Card key={obj.movieId} style={{ width: '14rem', cursor: 'pointer' }} onClick={() => this.showModal(obj.movieId)}>
                 <Card.Img variant="top" src={obj.image_url.includes('poster') ? obj.image_url : imgPlaceholder} />
                 <Card.Body>
                   <Card.Title>{obj.title}</Card.Title>
@@ -84,6 +84,20 @@ class TitleCards extends React.Component {
 }
 
 class TitleModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showAlert: false,
+    }
+  }
+
+  handleDismiss() {
+    this.setState({ showAlert: false });
+  }
+
+  handleShow() {
+    this.setState({ showAlert: true });
+  }
 
   handleFav = async () => {
     if (this.props.auth0.isAuthenticated) {
@@ -94,6 +108,7 @@ class TitleModal extends React.Component {
       }
       const url = `${process.env.REACT_APP_SERVER}/titleInfo`;
       axios.post(url, this.props.selectedTitle, config);
+      this.setState({ showAlert: true });
     }
   };
 
@@ -122,20 +137,23 @@ class TitleModal extends React.Component {
             <tbody>
               <tr>
                 <td>SD</td>
-                <td>{this.props.sD.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
+                <td>{this.props.sD.map((src, idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
               <tr>
                 <td>HD</td>
-                <td>{this.props.hD.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
+                <td>{this.props.hD.map((src, idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
               <tr>
                 <td>4k</td>
-                <td>{this.props.fourK.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
+                <td>{this.props.fourK.map((src, idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
             </tbody>
           </Table>
         </Modal.Body>
         <Modal.Footer>
+          <Alert show={this.state.showAlert} variant="success" onClose={this.handleDismiss}>
+            <p>Title added Successfully!</p>
+          </Alert>
           {this.props.auth0.isAuthenticated &&
             <Button variant="success" onClick={this.handleFav}>
               Add to Favorites
