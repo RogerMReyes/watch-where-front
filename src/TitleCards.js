@@ -18,19 +18,13 @@ class TitleCards extends React.Component {
   }
 
   showModal = async (movieId) => {
-    if (this.props.auth0.isAuthenticated) {
-      const res = await this.props.auth0.getIdTokenClaims();
-      const jwt = res.__raw;
-      const config = {
-        headers: { "Authorization": `Bearer ${jwt}` }
-      }
       const url = `${process.env.REACT_APP_SERVER}/titleInfo?titleID=${movieId}`;
-      const response = await axios.get(url, config);
+      const response = await axios.get(url);
       const sD = this.getSources('SD', response.data);
       const hD = this.getSources('HD', response.data);
       const fourK = this.getSources('4K', response.data);
       this.setState({ showModal: true, selectedTitle: response.data, sD: sD, hD: hD, fourK: fourK });
-    }
+    // }
   }
 
   hideModal = () => {
@@ -75,7 +69,7 @@ class TitleCards extends React.Component {
             sD={this.state.sD}
             hD={this.state.hD}
             fourK={this.state.fourK}
-            auth0={this.props.auth0}
+            auth0={this.props.auth0 && this.props.auth0}
           />
         </Row>
       </div>
