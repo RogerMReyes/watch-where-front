@@ -2,7 +2,7 @@ import React from 'react';
 import { withAuth0 } from '@auth0/auth0-react';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
-import { Card,Row, Modal,Table } from 'react-bootstrap';
+import { Card, Row, Modal, Table, Form } from 'react-bootstrap';
 import imgPlaceholder from './imgs/no-image-icon-23489.png';
 import './Profile.css';
 
@@ -26,7 +26,7 @@ class Profile extends React.Component {
     await this.getTitlesFromDB()
   }
 
-  getTitlesFromDB = async() => {
+  getTitlesFromDB = async () => {
     if (this.props.auth0.isAuthenticated) {
       const res = await this.props.auth0.getIdTokenClaims();
       const jwt = res.__raw;
@@ -43,7 +43,7 @@ class Profile extends React.Component {
     const randomTitleIdx = Math.floor(Math.random() * this.state.data.length);
     const randomTitle = this.state.data[randomTitleIdx];
     return (
-      <Card className='profileRec' onClick={()=>this.showModal(randomTitle)}>
+      <Card className='profileRec' onClick={() => this.showModal(randomTitle)}>
         <Card.Img variant="top" src={randomTitle.poster.includes('poster') ? randomTitle.poster : imgPlaceholder} />
         <Card.Body>
           <Card.Title>{randomTitle.title}</Card.Title>
@@ -54,10 +54,10 @@ class Profile extends React.Component {
   }
 
   showModal = async (selectedTitle) => {
-      const sD = this.getSources('SD', selectedTitle);
-      const hD = this.getSources('HD', selectedTitle);
-      const fourK = this.getSources('4K', selectedTitle);
-      this.setState({ showModal: true, selectedTitle: selectedTitle, sD: sD, hD: hD, fourK: fourK });
+    const sD = this.getSources('SD', selectedTitle);
+    const hD = this.getSources('HD', selectedTitle);
+    const fourK = this.getSources('4K', selectedTitle);
+    this.setState({ showModal: true, selectedTitle: selectedTitle, sD: sD, hD: hD, fourK: fourK });
   }
 
   hideModal = () => {
@@ -103,7 +103,7 @@ class Profile extends React.Component {
           <Row>
             {this.state.data.length > 0 &&
               this.state.data.map(obj =>
-                <Card key={obj.movieId} style={{ width: '20rem', cursor: 'pointer' }} onClick={()=>this.showModal(obj)}>
+                <Card key={obj.movieId} style={{ width: '20rem', cursor: 'pointer' }} onClick={() => this.showModal(obj)}>
                   <Card.Img variant="top" src={obj.poster.includes('poster') ? obj.poster : imgPlaceholder} />
                   <Card.Body>
                     <Card.Title>{obj.title}</Card.Title>
@@ -114,22 +114,38 @@ class Profile extends React.Component {
             }
           </Row>
         </div>
-        <ProfileModal 
-            showModal={this.state.showModal}
-            hideModal={this.hideModal}
-            selectedTitle={this.state.selectedTitle}
-            sD={this.state.sD}
-            hD={this.state.hD}
-            fourK={this.state.fourK}
-            auth0={this.props.auth0}
-            getTitlesFromDB={this.getTitlesFromDB}
-          />
+        <ProfileModal
+          showModal={this.state.showModal}
+          hideModal={this.hideModal}
+          selectedTitle={this.state.selectedTitle}
+          sD={this.state.sD}
+          hD={this.state.hD}
+          fourK={this.state.fourK}
+          auth0={this.props.auth0}
+          getTitlesFromDB={this.getTitlesFromDB}
+        />
       </div>
     );
   }
 }
 
 class ProfileModal extends React.Component {
+
+  updateTitle = async(e) => {
+    e.preventDefault();
+    if (this.props.auth0.isAuthenticated) {
+      const res = await this.props.auth0.getIdTokenClaims();
+      const jwt = res.__raw;
+      const config = {
+        headers: { "Authorization": `Bearer ${jwt}` }
+      }
+      const notes = {notes: e.target[0].value};
+      const url = `${process.env.REACT_APP_SERVER}/titleInfo/${this.props.selectedTitle._id}`
+      await axios.put(url, notes, config);
+      this.props.getTitlesFromDB();
+      this.props.hideModal();
+    }
+  }
 
   handleRemove = async (selectedTitle) => {
     if (this.props.auth0.isAuthenticated) {
@@ -170,25 +186,32 @@ class ProfileModal extends React.Component {
             <tbody>
               <tr>
                 <td>SD</td>
-                <td>{this.props.sD.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
+                <td>{this.props.sD.map((src, idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
               <tr>
                 <td>HD</td>
-                <td>{this.props.hD.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
+                <td>{this.props.hD.map((src, idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
               <tr>
                 <td>4k</td>
-                <td>{this.props.fourK.map((src,idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
+                <td>{this.props.fourK.map((src, idx) => <a key={idx} href={src.webUrl}>{src.name},</a>)}</td>
               </tr>
             </tbody>
           </Table>
         </Modal.Body>
+        <Modal.Body>
+          <Form onSubmit={this.updateTitle}>
+            <Form.Group>
+              <Form.Label>Notes: </Form.Label>
+              <Form.Control as="textarea" rows="3" placeholder={this.props.selectedTitle.notes && this.props.selectedTitle.notes} />
+            </Form.Group>
+            <Button variant="primary" type='submit'>Update</Button>
+          </Form>
+        </Modal.Body>
         <Modal.Footer>
-          {this.props.auth0.isAuthenticated &&
-            <Button variant="danger" onClick={() => this.handleRemove(this.props.selectedTitle)}>
-              Remove
-            </Button>
-          }
+          <Button variant="danger" onClick={() => this.handleRemove(this.props.selectedTitle)}>
+            Remove
+          </Button>
           <Button variant="secondary" onClick={this.props.hideModal}>
             Close
           </Button>
