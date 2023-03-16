@@ -8,12 +8,17 @@ class SearchForm extends React.Component {
     super(props);
     this.state = {
       searchTitle: '',
+      scrolled: false
     }
   }
 
   componentDidUpdate() {
-    const element = document.getElementById('titles');
-    element.scrollIntoView({behavior:"smooth"});
+
+    if (this.state.scrolled) {
+      const element = document.getElementById('titles');
+      element.scrollIntoView({ behavior: "smooth" });
+      this.setState({ scrolled: false });
+    }
   }
 
   handleSubmit = async (e) => {
@@ -21,8 +26,7 @@ class SearchForm extends React.Component {
     const url = `${process.env.REACT_APP_SERVER}/getTitles?searchQuery=${this.state.searchTitle}`
     const response = await axios.get(url);
     this.props.updateTitleData(response.data);
-    // const element = document.getElementById('titles');
-    // element.scrollIntoView({behavior:"smooth"});
+    this.setState({ scrolled: true });
   }
 
   render() {
