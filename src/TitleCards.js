@@ -54,7 +54,7 @@ class TitleCards extends React.Component {
           {this.props.titleData.length > 0 &&
             this.props.titleData.map(obj =>
               <Card key={obj.movieId} style={{ width: '14rem', cursor: 'pointer' }} onClick={() => this.showModal(obj.movieId)}>
-                <Card.Img variant="top" src={obj.image_url.includes('poster') ? obj.image_url : imgPlaceholder} />
+                <Card.Img variant="top" src={obj.image_url !== null && obj.image_url.includes('poster') ? obj.image_url : imgPlaceholder} />
                 <Card.Body>
                   <Card.Title>{obj.title}</Card.Title>
                   <Card.Text>Release: {obj.year ? obj.year : 'unknown'}</Card.Text>
