@@ -19,7 +19,7 @@ This application is a user-friendly search engine that enables users to find the
 ## Architecture
 FrontEnd: React, React-Bootstrap, axios, react-router-dom, Auth0
 
-Backend: Express, CORS, axios, Mongoose ORM, MongoDB Atlas, Auth0
+Backend: Express, CORS, axios, Mongoose ODM, MongoDB Atlas, Auth0
 
 API's: watchmode https://api.watchmode.com/
 
