@@ -1,16 +1,15 @@
 import React from 'react';
-import { withAuth0 } from '@auth0/auth0-react';
-import Button from 'react-bootstrap/Button';
+// import { withAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
-import { Card, Row, Modal, Table, Form } from 'react-bootstrap';
-import imgPlaceholder from './imgs/no-image-icon-23489.png';
-import './Profile.css';
+import { Card, Row, Modal, Table, Form, Button } from 'react-bootstrap';
+import imgPlaceholder from '../imgs/no-image-icon-23489.png';
+import '../css/Profile.css';
 
 class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      nickname: this.props.auth0.user.nickname,
+      // nickname: this.props.auth0.user.nickname,
       data: [],
       showModal: false,
       selectedTitle: {},
@@ -27,16 +26,17 @@ class Profile extends React.Component {
   }
 
   getTitlesFromDB = async () => {
-    if (this.props.auth0.isAuthenticated) {
-      const res = await this.props.auth0.getIdTokenClaims();
-      const jwt = res.__raw;
-      const config = {
-        headers: { "Authorization": `Bearer ${jwt}` }
-      }
+    // if (this.props.auth0.isAuthenticated) {
+      // const res = await this.props.auth0.getIdTokenClaims();
+      // const jwt = res.__raw;
+      // const config = {
+      //   headers: { "Authorization": `Bearer ${jwt}` }
+      // }
       const url = `${process.env.REACT_APP_SERVER}/profileTitles`
-      const response = await axios(url, config);
+      // const response = await axios(url, config);
+      const response = await axios(url);
       this.setState({ data: response.data }, () => this.recommendation = this.recTitle());
-    }
+    // }
   }
 
   recTitle = () => {
@@ -79,9 +79,9 @@ class Profile extends React.Component {
     return srtList;
   }
 
-  updateUsername = async (nickname) => {
+  // updateUsername = async (nickname) => {
 
-  }
+  // }
 
   render() {
     return (
@@ -89,9 +89,9 @@ class Profile extends React.Component {
         <div className='profile-top'>
           <div className='userInfo'>
             <h1>Profile:</h1>
-            <h2>{this.state.nickname}</h2>
-            <Button onClick={this.updateUsername}>Update</Button>
-            <p>{this.props.auth0.user.email}</p>
+            {/* <h2>{this.state.nickname}</h2> */}
+            {/* <Button onClick={this.updateUsername}>Update</Button> */}
+            {/* <p>{this.props.auth0.user.email}</p> */}
           </div>
           <div className='recTitle'>
             <h2>Recommended:</h2>
@@ -133,32 +133,36 @@ class ProfileModal extends React.Component {
 
   updateTitle = async(e) => {
     e.preventDefault();
-    if (this.props.auth0.isAuthenticated) {
-      const res = await this.props.auth0.getIdTokenClaims();
-      const jwt = res.__raw;
-      const config = {
-        headers: { "Authorization": `Bearer ${jwt}` }
-      }
+    // if (this.props.auth0.isAuthenticated) {
+    //   const res = await this.props.auth0.getIdTokenClaims();
+    //   const jwt = res.__raw;
+    //   const config = {
+    //     headers: { "Authorization": `Bearer ${jwt}` }
+    //   }
       const notes = {notes: e.target[0].value};
       const url = `${process.env.REACT_APP_SERVER}/titleInfo/${this.props.selectedTitle._id}`
-      await axios.put(url, notes, config);
+      // await axios.put(url, notes, config);
+      await axios.put(url, notes);
+
       this.props.getTitlesFromDB();
       this.props.hideModal();
-    }
+    // }
   }
 
   handleRemove = async (selectedTitle) => {
-    if (this.props.auth0.isAuthenticated) {
-      const res = await this.props.auth0.getIdTokenClaims();
-      const jwt = res.__raw;
-      const config = {
-        headers: { "Authorization": `Bearer ${jwt}` }
-      }
+    // if (this.props.auth0.isAuthenticated) {
+    //   const res = await this.props.auth0.getIdTokenClaims();
+    //   const jwt = res.__raw;
+    //   const config = {
+    //     headers: { "Authorization": `Bearer ${jwt}` }
+    //   }
       const url = `${process.env.REACT_APP_SERVER}/titleInfo/${selectedTitle._id}`
-      await axios.delete(url, config);
+      // await axios.delete(url, config);
+      await axios.delete(url);
+
       this.props.getTitlesFromDB();
       this.props.hideModal();
-    }
+    // }
   }
 
   render() {
@@ -221,4 +225,5 @@ class ProfileModal extends React.Component {
   }
 }
 
-export default withAuth0(Profile);
+// export default withAuth0(Profile);
+export default Profile;

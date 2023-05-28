@@ -7,7 +7,7 @@
 }
 
 .searchBox::before {
-  background-image: url('./imgs/searchBackground.jpg');
+  background-image: url('../imgs/searchBackground.jpg');
   background-size: cover;
   content: "";
   position: absolute;

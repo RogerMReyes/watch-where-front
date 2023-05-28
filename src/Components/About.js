@@ -1,6 +1,6 @@
 import React from 'react';
-import Roger from './imgs/Profilepicture.jpg'
-import './About.css';
+import Roger from '../imgs/Profilepicture.jpg'
+import '../css/About.css';
 import { Button } from 'react-bootstrap';
 
 class About extends React.Component {

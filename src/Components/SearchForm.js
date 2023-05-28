@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Container, Button, Row, Col } from "react-bootstrap";
 import axios from "axios";
-import './SearchForm.css';
+import '../css/SearchForm.css';
 
 class SearchForm extends React.Component {
   constructor(props) {

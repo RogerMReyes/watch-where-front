@@ -9,7 +9,7 @@ import Header from './Header';
 import Home from './Home';
 import Profile from './Profile';
 import About from './About';
-import { withAuth0 } from '@auth0/auth0-react';
+// import { withAuth0 } from '@auth0/auth0-react';
 
 class App extends React.Component {
   render() {
@@ -24,7 +24,7 @@ class App extends React.Component {
           </Route>
           <Route
             path='/Profile'
-            element={this.props.auth0.isAuthenticated && <Profile />}>
+            element={/*this.props.auth0.isAuthenticated &&*/ <Profile />}>
           </Route>
           <Route
             path='/About'
@@ -38,4 +38,5 @@ class App extends React.Component {
   }
 }
 
-export default withAuth0(App);
+// export default withAuth0(App);
+export default App;
