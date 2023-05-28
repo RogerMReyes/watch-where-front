@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card, Modal, Button, Row, Table, Alert } from 'react-bootstrap';
 import axios from 'axios';
-import imgPlaceholder from './imgs/no-image-icon-23489.png';
-import { withAuth0 } from '@auth0/auth0-react';
-import './TitleCards.css';
+import imgPlaceholder from '../imgs/no-image-icon-23489.png';
+// import { withAuth0 } from '@auth0/auth0-react';
+import '../css/TitleCards.css';
 
 class TitleCards extends React.Component {
   constructor(props) {
@@ -69,7 +69,7 @@ class TitleCards extends React.Component {
             sD={this.state.sD}
             hD={this.state.hD}
             fourK={this.state.fourK}
-            auth0={this.props.auth0 && this.props.auth0}
+            // auth0={this.props.auth0 && this.props.auth0}
           />
         </Row>
       </div>
@@ -94,16 +94,17 @@ class TitleModal extends React.Component {
   }
 
   handleFav = async () => {
-    if (this.props.auth0.isAuthenticated) {
-      const res = await this.props.auth0.getIdTokenClaims();
-      const jwt = res.__raw;
-      const config = {
-        headers: { "Authorization": `Bearer ${jwt}` }
-      }
+    // if (this.props.auth0.isAuthenticated) {
+    //   const res = await this.props.auth0.getIdTokenClaims();
+    //   const jwt = res.__raw;
+    //   const config = {
+    //     headers: { "Authorization": `Bearer ${jwt}` }
+    //   }
       const url = `${process.env.REACT_APP_SERVER}/titleInfo`;
-      axios.post(url, this.props.selectedTitle, config);
+      // axios.post(url, this.props.selectedTitle, config);
+      axios.post(url, this.props.selectedTitle);
       this.setState({ showAlert: true });
-    }
+    // }
   };
 
   render() {
@@ -148,7 +149,7 @@ class TitleModal extends React.Component {
           <Alert show={this.state.showAlert} variant="success" onClose={this.handleDismiss}>
             <p>Title added Successfully!</p>
           </Alert>
-          {this.props.auth0.isAuthenticated &&
+          {/* this.props.auth0.isAuthenticated && */
             <Button variant="success" onClick={this.handleFav}>
               Add to Favorites
             </Button>
@@ -162,4 +163,5 @@ class TitleModal extends React.Component {
   }
 }
 
-export default withAuth0(TitleCards);
+// export default withAuth0(TitleCards);
+export default TitleCards;
